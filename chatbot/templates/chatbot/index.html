@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10MS BanglishGPT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'chatbot/style.css' %}" />
+</head>
+<body>
+  <div class="wrapper">
+    <div class="title">BanglishGPT</div>
+
+    <div class="upload-box">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="pdf_file" accept=".pdf" required />
+        <button type="submit">Upload PDF</button>
+      </form>
+      {% if msg %}
+        <div class="msg-status">{{ msg }}</div>
+      {% endif %}
+    </div>
+
+    <div class="box" id="chat-box">
+      {% if question and answer %}
+        <div class="item">
+          <div class="icon"><i class="fa fa-user"></i></div>
+          <div class="msg">{{ question }}</div>
+        </div>
+        <br clear="both" />
+        <div class="item right">
+          <div class="icon"><i class="fa fa-robot"></i></div>
+          <div class="msg">{{ answer }}</div>
+        </div>
+      {% else %}
+        <p style="text-align:center; color:gray;">Start chatting by asking a question...</p>
+      {% endif %}
+    </div>
+
+    <div class="typing-area">
+      <div class="input-field">
+        <input type="text" id="user-input" placeholder="Type your message" required />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sendBtn = document.getElementById("send-btn");
+    const inputField = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+
+    sendBtn.addEventListener("click", async () => {
+      const message = inputField.value.trim();
+      if (!message) return;
+
+      const userMessage = `
+        <div class="item">
+          <div class="icon"><i class="fa fa-user"></i></div>
+          <div class="msg">${message}</div>
+        </div>
+      `;
+      chatBox.innerHTML += userMessage;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      inputField.value = "";
+
+      const botTyping = `
+        <div class="item right" id="typing-dots">
+          <div class="icon"><i class="fa fa-robot"></i></div>
+          <div class="msg">
+            <span class="typing-dots">
+              <span></span><span></span><span></span>
+            </span>
+          </div>
+        </div>
+      `;
+      chatBox.innerHTML += botTyping;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const response = await fetch("/chat/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ question: message })
+      });
+
+      const data = await response.json();
+      const botMessage = `
+        <div class="item right">
+          <div class="icon"><i class="fa fa-robot"></i></div>
+          <div class="msg">${data.answer}</div>
+        </div>
+      `;
+
+      document.getElementById("typing-dots").remove();
+      chatBox.innerHTML += botMessage;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
+</body>
+</html>
+

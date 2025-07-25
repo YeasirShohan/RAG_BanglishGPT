@@ -1,0 +1,11 @@
+Django>=4.2
+PyMuPDF>=1.22.0
+pdfminer.six>=20221105
+chromadb>=0.4.24
+sentence-transformers>=2.2.2
+ollama>=0.1.8
+requests>=2.31.0
+python-dotenv>=1.0.1
+fastapi>=0.110.0
+uvicorn>=0.29.0
+starlette>=0.36.3
