@@ -1,4 +1,4 @@
-# 🧠 BanglishGPT – Bangla-English PDF Chatbot using RAG + Django
+# 🧠 BanglishGPT – Bangla-English PDF query Chatbot using RAG + Django
 
 BanglishGPT is a **Retrieval-Augmented Generation (RAG)** web application that allows users to upload Bangla or English PDFs and ask questions in natural language. The system answers contextually based on the uploaded documents using **local LLMs (like Mistral, LLaMA3, or Phi-3 via Ollama)** and **ChromaDB** as the vector store.
 
